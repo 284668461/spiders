@@ -6,7 +6,7 @@
  @create: 2020-03-12 15:25
 '''
 import requests
-import headers as h
+from spiders import headers as h
 import re
 import time
 from pyquery import PyQuery as pq

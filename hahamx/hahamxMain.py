@@ -9,9 +9,10 @@
 import  requests
 requests.packages.urllib3.disable_warnings()
 import datetime
-import headers as h
+from spiders import headers as h
 import re
 import os
+import json
 from pyquery import PyQuery as pq
 from concurrent.futures import ThreadPoolExecutor
 thread_pool = ThreadPoolExecutor(100)
@@ -81,7 +82,10 @@ def getUrl(url):
         threadLock.release()
 
         print("正在请求",url)
-        res = requests.get(url, headers=h.getHeader(), verify=False)
+
+        proxies = getProxy()
+
+        res = requests.get(url, headers=h.getHeader(), proxies=proxies,verify=False)
         html = res.text
 
         thread_pool.submit(filterUrl, html)
@@ -120,8 +124,21 @@ def filterUrl(text):
             thread_pool.submit(down, d)
 
 
-if __name__ == '__main__':
+'''
+ @Description  获得一个代理ip
+ @Author 284668461@qq.com
+ @Date 2020/5/20 9:26 
+'''
+def getProxy():
+    res = requests.get("http://47.106.86.144:8088/getProxy")
 
+    info = json.loads(res.text)
+
+    proxy = f'{info["type"]}://{info["ip"]}:{info["port"]}'
+    return proxy
+
+if __name__ == '__main__':
+    # getProxy()
 
     url = "https://www.hahamx.cn/pic"
     res = requests.get(url, headers=h.getHeader(), verify=False)
@@ -132,9 +149,6 @@ if __name__ == '__main__':
 
     # 获得总页数
     for i in ls:
-        print( i )
-        print( i.text() )
-
         try:
             tempNum = int( i.text() )
             page = tempNum

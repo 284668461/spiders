@@ -8,7 +8,7 @@
 
 import  requests
 import datetime
-import headers as h
+from spiders import headers as h
 import re
 import os
 from pyquery import PyQuery as pq
